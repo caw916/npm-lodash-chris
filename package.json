@@ -1,5 +1,5 @@
 {
-  "name": "npm-lodash",
+  "name": "npm-lodash-chris",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "cookie": "0.1.2",
-    "lodash": "^4.17.21",
-    "npm-lodash": "^1.0.8"
+    "lodash": "4.17.11",
+    "npm-lodash": "1.0.8"
   }
 }
