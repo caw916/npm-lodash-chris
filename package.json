@@ -1,5 +1,10 @@
 {
+  "name": "npm-lodash-chris",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lodash demo wired to Nexus (SNR/Firewall) + IQ CLI",
+  "license": "UNLICENSED",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "4.17.21"
   }
 }
