@@ -3,12 +3,11 @@ name: Sonatype IQ Scan
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   iq-scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,16 +15,18 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Configure npm to use Nexus
-      run: |
-         echo "registry=${{ secrets.NPM_REGISTRY }}" >> .npmrc
-         REG_NO_PROTO="${{ secrets.NPM_REGISTRY }}"
-         REG_NO_PROTO="${REG_NO_PROTO#http://}"
-         REG_NO_PROTO="${REG_NO_PROTO#https://}"
-         echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64 }}" >> .npmrc
-         echo "//${REG_NO_PROTO}:always-auth=true" >> .npmrc
+        shell: bash
+        run: |
+          echo "registry=${{ secrets.NPM_REGISTRY }}" >> .npmrc
+          REG_NO_PROTO="${{ secrets.NPM_REGISTRY }}"
+          REG_NO_PROTO="${REG_NO_PROTO#http://}"
+          REG_NO_PROTO="${REG_NO_PROTO#https://}"
+          echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64 }}" >> .npmrc
+          echo "//${REG_NO_PROTO}:always-auth=true" >> .npmrc
+          cat .npmrc
 
       - name: Install dependencies (via Nexus)
         run: npm ci --no-audit || npm install --no-audit
