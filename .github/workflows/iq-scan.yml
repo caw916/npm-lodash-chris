@@ -1,0 +1,46 @@
+name: Sonatype IQ Scan
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  iq-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure npm to use Nexus
+        run: |
+          echo "registry=${{ secrets.NPM_REGISTRY }}" >> .npmrc
+          echo "//${{ secrets.NPM_REGISTRY#https:// }}/:_auth=${{ secrets.NEXUS_AUTH_BASE64 }}" >> .npmrc
+          echo "//${{ secrets.NPM_REGISTRY#https:// }}/:always-auth=true" >> .npmrc
+
+      - name: Install dependencies (via Nexus)
+        run: npm ci --no-audit || npm install --no-audit
+
+      - name: Download IQ CLI
+        run: |
+          curl -L "${{ secrets.IQ_CLI_URL }}" -o iq-cli.jar
+          test -s iq-cli.jar
+
+      - name: Run IQ Scan (Build stage)
+        env:
+          IQ_URL: ${{ secrets.IQ_URL }}
+          IQ_USER: ${{ secrets.IQ_USER }}
+          IQ_TOKEN: ${{ secrets.IQ_TOKEN }}
+        run: |
+          java -jar iq-cli.jar \
+            -i "cawtech-lodash" \
+            -s "$IQ_URL" \
+            -a "$IQ_USER:$IQ_TOKEN" \
+            -t build \
+            "$GITHUB_WORKSPACE"
