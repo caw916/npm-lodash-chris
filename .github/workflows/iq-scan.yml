@@ -19,10 +19,13 @@ jobs:
           node-version: '20'
 
       - name: Configure npm to use Nexus
-        run: |
-          echo "registry=${{ secrets.NPM_REGISTRY }}" >> .npmrc
-          echo "//${{ secrets.NPM_REGISTRY#https:// }}/:_auth=${{ secrets.NEXUS_AUTH_BASE64 }}" >> .npmrc
-          echo "//${{ secrets.NPM_REGISTRY#https:// }}/:always-auth=true" >> .npmrc
+      run: |
+         echo "registry=${{ secrets.NPM_REGISTRY }}" >> .npmrc
+         REG_NO_PROTO="${{ secrets.NPM_REGISTRY }}"
+         REG_NO_PROTO="${REG_NO_PROTO#http://}"
+         REG_NO_PROTO="${REG_NO_PROTO#https://}"
+         echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64 }}" >> .npmrc
+         echo "//${REG_NO_PROTO}:always-auth=true" >> .npmrc
 
       - name: Install dependencies (via Nexus)
         run: npm ci --no-audit || npm install --no-audit
