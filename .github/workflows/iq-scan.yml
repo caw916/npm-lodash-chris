@@ -32,13 +32,12 @@ jobs:
           curl -fsS https://registry.npmjs.org/lodash >/dev/null
           echo "✅ Public npm is reachable"
 
-            # 🔍 Check reachability of the lodash tarball npm tries to download
+      # 🔍 Check reachability of the lodash tarball npm tries to download
       - name: Tarball reachability check (lodash 4.17.21)
         run: |
           set -e
           curl -fsSI https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz >/dev/null
           echo "✅ Lodash tarball is reachable"
-
 
       # 🔍 Inspect npm registry setting and lockfile 'resolved' URLs
       - name: Inspect npm config and lockfile
@@ -54,22 +53,15 @@ jobs:
             echo "No package-lock.json present."
           fi
 
-
-- name: Install dependencies (ignore lockfile for this PR run)
-  shell: bash
-  run: |
-    # Move the lockfile aside because it hard-codes Nexus URLs.
-    mv -f package-lock.json package-lock.nexus.bak || true
-    echo "🔎 Confirming no lockfile is present:"
-    ls -l package-lock.json || echo "OK: no package-lock.json (Nexus URLs removed from resolution)"
-    # Install from the public registry you set earlier
-    npm install --no-audit --loglevel=info
-
-
-
-
-
-
+      - name: Install dependencies (ignore lockfile for this PR run)
+        shell: bash
+        run: |
+          # Move the lockfile aside because it hard-codes Nexus URLs.
+          mv -f package-lock.json package-lock.nexus.bak || true
+          echo "🔎 Confirming no lockfile is present:"
+          ls -l package-lock.json || echo "OK: no package-lock.json (Nexus URLs removed from resolution)"
+          # Install from the public registry you set earlier
+          npm install --no-audit --loglevel=info
 
       - name: Download IQ CLI
         run: curl -fsSL "${{ secrets.IQ_CLI_URL_DEMO_ENV }}" -o iq-cli.jar
