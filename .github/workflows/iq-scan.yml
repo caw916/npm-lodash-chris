@@ -40,6 +40,22 @@ jobs:
           echo "✅ Lodash tarball is reachable"
 
 
+      # 🔍 Inspect npm registry setting and lockfile 'resolved' URLs
+      - name: Inspect npm config and lockfile
+        shell: bash
+        run: |
+          echo "npm registry (config): $(npm config get registry)"
+          if [ -f package-lock.json ]; then
+            echo "Unique hosts found in package-lock.json 'resolved' fields:"
+            grep -oE '"resolved":\s*"https?://[^/"]+' package-lock.json | sed 's/"resolved":\s*"//' | sort -u || true
+            echo "Sample resolved lines:"
+            grep -oE '"resolved":\s*"[^"]+"' package-lock.json | head -n 10 || true
+          else
+            echo "No package-lock.json present."
+          fi
+
+
+
       - name: Install dependencies
         run: npm ci --no-audit || npm install --no-audit
 
