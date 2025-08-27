@@ -17,30 +17,31 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Configure npm to use Nexus
+      - name: Configure npm for Nexus
         shell: bash
         run: |
-          echo "registry=${{ secrets.NPM_REGISTRY }}" >> .npmrc
-          REG_NO_PROTO="${{ secrets.NPM_REGISTRY }}"
-          REG_NO_PROTO="${REG_NO_PROTO#http://}"
-          REG_NO_PROTO="${REG_NO_PROTO#https://}"
-          echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64 }}" >> .npmrc
+          REGISTRY="${{ secrets.NPM_REGISTRY_DEMO_ENV }}"
+          echo "registry=${REGISTRY}" > .npmrc
+          REG_NO_PROTO="${REGISTRY#http://}"; REG_NO_PROTO="${REG_NO_PROTO#https://}"
+          echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64_DEMO_ENV }}" >> .npmrc
           echo "//${REG_NO_PROTO}:always-auth=true" >> .npmrc
-          cat .npmrc
+
+      # 🔍 Smoke test to verify Nexus connection
+      - name: Smoke test Nexus registry
+        run: |
+          npm ping --registry "${{ secrets.NPM_REGISTRY_DEMO_ENV }}"
 
       - name: Install dependencies (via Nexus)
         run: npm ci --no-audit || npm install --no-audit
 
       - name: Download IQ CLI
-        run: |
-          curl -L "${{ secrets.IQ_CLI_URL }}" -o iq-cli.jar
-          test -s iq-cli.jar
+        run: curl -fsSL "${{ secrets.IQ_CLI_URL_DEMO_ENV }}" -o iq-cli.jar
 
       - name: Run IQ Scan (Build stage)
         env:
-          IQ_URL: ${{ secrets.IQ_URL }}
-          IQ_USER: ${{ secrets.IQ_USER }}
-          IQ_TOKEN: ${{ secrets.IQ_TOKEN }}
+          IQ_URL:  ${{ secrets.IQ_URL_DEMO_ENV }}
+          IQ_USER: ${{ secrets.IQ_USERID_TOKEN_DEMO_ENV }}
+          IQ_TOKEN: ${{ secrets.IQ_TOKEN_DEMO_ENV }}
         run: |
           java -jar iq-cli.jar \
             -i "cawtech-lodash" \
