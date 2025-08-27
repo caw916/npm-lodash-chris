@@ -26,11 +26,6 @@ jobs:
           echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64_DEMO_ENV }}" >> .npmrc
           echo "//${REG_NO_PROTO}:always-auth=true" >> .npmrc
 
-      # 🔍 Smoke test to verify Nexus connection
-      - name: Smoke test Nexus registry
-        run: |
-          npm ping --registry "${{ secrets.NPM_REGISTRY_DEMO_ENV }}"
-
       - name: Install dependencies (via Nexus)
         run: npm ci --no-audit || npm install --no-audit
 
