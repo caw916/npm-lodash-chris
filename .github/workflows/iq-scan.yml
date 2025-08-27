@@ -17,27 +17,14 @@ jobs:
         with:
           node-version: "20"
 
- #     - name: Configure npm for Nexus
- #       shell: bash
- #       run: |
- #         REGISTRY="${{ secrets.NPM_REGISTRY_DEMO_ENV }}"
- #         echo "registry=${REGISTRY}" > .npmrc
- #         REG_NO_PROTO="${REGISTRY#http://}"; REG_NO_PROTO="${REG_NO_PROTO#https://}"
- #         echo "//${REG_NO_PROTO}:_auth=${{ secrets.NEXUS_AUTH_BASE64_DEMO_ENV }}" >> .npmrc
- #         echo "//${REG_NO_PROTO}:always-auth=true" >> .npmrc
+      # TEST ONLY: use public npm to isolate network issues
+      - name: Configure npm for test (public npm)
+        run: |
+          echo "registry=https://registry.npmjs.org/" > .npmrc
+          echo "audit=false" >> .npmrc
+          echo "fund=false" >> .npmrc
 
-    - name: Configure npm for test (public npm)
-      run: |
-        echo "registry=https://registry.npmjs.org/" > .npmrc
-        echo "audit=false" >> .npmrc
-        echo "fund=false" >> .npmrc
-
-###
-#
-
-
-
-      - name: Install dependencies (via Nexus)
+      - name: Install dependencies
         run: npm ci --no-audit || npm install --no-audit
 
       - name: Download IQ CLI
