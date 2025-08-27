@@ -24,6 +24,14 @@ jobs:
           echo "audit=false" >> .npmrc
           echo "fund=false" >> .npmrc
 
+      # 🔍 Connectivity check (public npm)
+      - name: Connectivity check (public npm)
+        run: |
+          set -e
+          curl -fsS https://registry.npmjs.org/ >/dev/null
+          curl -fsS https://registry.npmjs.org/lodash >/dev/null
+          echo "✅ Public npm is reachable"
+
       - name: Install dependencies
         run: npm ci --no-audit || npm install --no-audit
 
