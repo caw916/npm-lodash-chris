@@ -55,11 +55,6 @@ jobs:
           fi
 
 
-
-#      - name: Install dependencies
-#        run: npm ci --no-audit || npm install --no-audit
-
-
 - name: Install dependencies (ignore lockfile for this PR run)
   shell: bash
   run: |
