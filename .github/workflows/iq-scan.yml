@@ -56,8 +56,25 @@ jobs:
 
 
 
-      - name: Install dependencies
-        run: npm ci --no-audit || npm install --no-audit
+#      - name: Install dependencies
+#        run: npm ci --no-audit || npm install --no-audit
+
+
+- name: Install dependencies (ignore lockfile for this PR run)
+  shell: bash
+  run: |
+    # Move the lockfile aside because it hard-codes Nexus URLs.
+    mv -f package-lock.json package-lock.nexus.bak || true
+    echo "🔎 Confirming no lockfile is present:"
+    ls -l package-lock.json || echo "OK: no package-lock.json (Nexus URLs removed from resolution)"
+    # Install from the public registry you set earlier
+    npm install --no-audit --loglevel=info
+
+
+
+
+
+
 
       - name: Download IQ CLI
         run: curl -fsSL "${{ secrets.IQ_CLI_URL_DEMO_ENV }}" -o iq-cli.jar
